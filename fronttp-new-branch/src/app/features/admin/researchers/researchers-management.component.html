@@ -1,0 +1,112 @@
+<div class="fade-in">
+    <h1 class="mb-4">Researchers Management</h1>
+    
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">All Researchers</h5>
+          <button class="btn btn-primary" routerLink="/admin/researchers/new">
+            <i class="cil-plus"></i> Add Researcher
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Search and Filters -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="cil-search"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Search researchers..."
+                [(ngModel)]="searchTerm"
+                (input)="filterResearchers()">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="btn-group float-end" role="group">
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="{'btn-primary': statusFilter === 'all', 'btn-outline-primary': statusFilter !== 'all'}"
+                (click)="onStatusFilterChange('all')">
+                All
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="{'btn-primary': statusFilter === 'active', 'btn-outline-primary': statusFilter !== 'active'}"
+                (click)="onStatusFilterChange('active')">
+                Active
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="{'btn-primary': statusFilter === 'pending', 'btn-outline-primary': statusFilter !== 'pending'}"
+                (click)="onStatusFilterChange('pending')">
+                Pending
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="{'btn-primary': statusFilter === 'inactive', 'btn-outline-primary': statusFilter !== 'inactive'}"
+                (click)="onStatusFilterChange('inactive')">
+                Inactive
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Researchers Table -->
+        <div class="table-responsive">
+          <table class="table table-striped border">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Institution</th>
+                <th>Research Domain</th>
+                <th>Publications</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let researcher of filteredResearchers">
+                <td>{{ researcher.name }}</td>
+                <td>{{ researcher.email }}</td>
+                <td>{{ researcher.institution }}</td>
+                <td>{{ researcher.domain }}</td>
+                <td>{{ researcher.publications }}</td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'bg-success': researcher.status === 'active',
+                    'bg-warning': researcher.status === 'pending',
+                    'bg-danger': researcher.status === 'inactive'
+                  }">
+                    {{ researcher.status | titlecase }}
+                  </span>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" [routerLink]="['/admin/researchers', researcher.id]">
+                      <i class="cil-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteResearcher(researcher.id)">
+                      <i class="cil-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="filteredResearchers.length === 0">
+                <td colspan="7" class="text-center py-3">No researchers found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>

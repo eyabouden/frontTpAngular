@@ -1,0 +1,199 @@
+<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@4.5.0/dist/css/coreui.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Main Admin Layout -->
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>Research Admin</h2>
+    </div>
+    <div class="sidebar-menu">
+      <div class="menu-item active" routerLinkActive="active">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="menu-item" routerLink="dashboard/admin/users" routerLinkActive="active">
+        <i class="bi bi-people"></i>
+        <span>Users</span>
+      </div>
+      
+      <div class="menu-item"  routerLinkActive="active">
+        <i class="bi bi-person-badge"></i>
+        <span>Researchers</span>
+      </div>
+      <div class="menu-item"  routerLinkActive="active">
+        <i class="bi bi-journal-text"></i>
+        <span>Publications</span>
+      </div>
+      <div class="menu-item" routerLinkActive="active">
+        <i class="bi bi-diagram-3"></i>
+        <span>Research Domains</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" routerLinkActive="active">
+        <i class="bi bi-gear"></i>
+        <span>Settings</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-light bg-light px-3">
+      <button class="btn btn-outline-primary toggle-sidebar-btn">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="d-flex align-items-center">
+        <div class="position-relative me-3">
+          <i class="bi bi-bell"></i>
+          <span class="badge bg-danger">5</span>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+            <img src="/assets/profile-placeholder.jpg" alt="Admin" class="rounded-circle" width="35">
+            Admin User
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <!-- Dashboard Overview (Initial Page) -->
+      <div class="dashboard-container">
+        <!-- Page Title -->
+        <div class="page-title">
+          <h1>Dashboard Overview</h1>
+          <div class="breadcrumb">
+            <span>Home</span>
+            <i class="bi bi-chevron-right"></i>
+            <span>Dashboard</span>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+          <div class="stat-card primary">
+            <div class="stat-icon">
+              <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-details">
+              <h2>{{ stats.totalUsers }}</h2>
+              <p>Total Users</p>
+            </div>
+          </div>
+
+          <div class="stat-card info">
+            <div class="stat-icon">
+              <i class="bi bi-person-badge"></i>
+            </div>
+            <div class="stat-details">
+              <h2>{{ stats.totalResearchers }}</h2>
+              <p>Researchers</p>
+            </div>
+          </div>
+
+          <div class="stat-card success">
+            <div class="stat-icon">
+              <i class="bi bi-journal-text"></i>
+            </div>
+            <div class="stat-details">
+              <h2>{{ stats.totalPublications }}</h2>
+              <p>Publications</p>
+            </div>
+          </div>
+
+          <div class="stat-card warning">
+            <div class="stat-icon">
+              <i class="bi bi-diagram-3"></i>
+            </div>
+            <div class="stat-details">
+              <h2>{{ stats.totalDomains }}</h2>
+              <p>Research Domains</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Widgets -->
+        <div class="dashboard-widgets">
+          <!-- Pending Actions -->
+          <div class="widget">
+            <div class="widget-header">
+              <h5>Pending Actions</h5>
+              <span class="badge bg-danger">{{ stats.pendingPublications + stats.pendingUsers }}</span>
+            </div>
+            <div class="widget-body">
+              <div class="pending-actions">
+                <div class="pending-item">
+                  <div class="pending-icon danger">
+                    <i class="bi bi-journal-plus"></i>
+                  </div>
+                  <div class="pending-details">
+                    <h6>Pending Publications</h6>
+                    <h3>{{ stats.pendingPublications }}</h3>
+                  </div>
+                </div>
+                <div class="pending-item">
+                  <div class="pending-icon warning">
+                    <i class="bi bi-person-plus"></i>
+                  </div>
+                  <div class="pending-details">
+                    <h6>Pending User Approvals</h6>
+                    <h3>{{ stats.pendingUsers }}</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-actions">
+                <button class="btn btn-outline-primary" >Review Publications</button>
+                <button class="btn btn-outline-secondary" >Manage User Approvals</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="widget">
+            <div class="widget-header">
+              <h5>Recent Activity</h5>
+              <button class="btn btn-sm btn-outline-primary">View All</button>
+            </div>
+            <div class="widget-body">
+              <div class="activity-list">
+                <div *ngFor="let activity of recentActivity" class="activity-item">
+                  <div class="activity-icon" [ngClass]="activity.type">
+                    <i class="bi" [ngClass]="{
+                      'bi-journal-text': activity.type === 'publication',
+                      'bi-person': activity.type === 'user',
+                      'bi-grid': activity.type === 'domain'
+                    }"></i>
+                  </div>
+                  <div class="activity-details">
+                    <div class="activity-header">
+                      <strong>{{ activity.title || activity.name }}</strong>
+                      <span class="activity-time">{{ activity.time }}</span>
+                    </div>
+                    <div class="activity-info">
+                      <ng-container [ngSwitch]="activity.action">
+                        <span *ngSwitchCase="'added'">New {{ activity.type }} added</span>
+                        <span *ngSwitchCase="'registered'">New user registered</span>
+                        <span *ngSwitchCase="'pending'">Pending approval</span>
+                      </ng-container>
+                      <span *ngIf="activity.user" class="user-info">by {{ activity.user }}</span>
+                      <span *ngIf="activity.role" class="role-badge">{{ activity.role }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

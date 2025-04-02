@@ -1,0 +1,61 @@
+<!-- users.component.html -->
+<c-card>
+    <c-card-header>
+      <strong>Users</strong>
+    </c-card-header>
+    <c-card-body>
+      <div *ngIf="loading" class="text-center py-5">
+        <c-spinner></c-spinner>
+      </div>
+  
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+  
+      <c-table [responsive]="true" [striped]="true" [hover]="true" *ngIf="!loading && !error">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Employment Date</th>
+            <th>Establishment</th>
+            <th>Last Diploma</th>
+            <th>Grade</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.id }}</td>
+            <td>{{ user.firstName }} {{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <c-badge [color]="user.role === 'ADMIN' ? 'danger' : 'info'">
+                {{ user.role }}
+              </c-badge>
+            </td>
+            <td>{{ formatDate(user.employmentDate) }}</td>
+            <td>{{ user.originalEstablishment }}</td>
+            <td>{{ user.lastDiploma }}</td>
+            <td>{{ user.grade }}</td>
+            <td>
+              <div class="btn-group">
+                <!-- <button cButton color="primary" size="sm" [routerLink]="['/users', user.id]">
+                  <svg cIcon name="cilPencil"></svg>
+                </button> -->
+                <button cButton color="danger" size="sm" (click)="deleteUser(user.id)">
+                  <svg cIcon name="cilTrash"></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </c-table>
+  
+      <div *ngIf="!loading && !error && users.length === 0" class="text-center py-5">
+        No users found.
+      </div>
+    </c-card-body>
+  </c-card>
