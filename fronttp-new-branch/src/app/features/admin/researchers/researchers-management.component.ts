@@ -1,68 +1,126 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
 
-interface Researcher {
-  id: number;
-  name: string;
-  email: string;
-  institution: string;
-  domain: string;
-  publications: number;
-  status: string;
-}
+
+// Import CoreUI modules
+import { 
+  AvatarModule,
+  BadgeModule,
+  BreadcrumbModule,
+  ButtonModule,
+  CardModule,
+  DropdownModule,
+  FooterModule,
+  FormModule,
+  GridModule,
+  HeaderModule,
+  ListGroupModule,
+  NavModule,
+  SidebarModule,
+  WidgetModule,
+  UtilitiesModule,
+} from '@coreui/angular';
+
+// Import CoreUI Icons
+import { IconModule, IconSetService } from '@coreui/icons-angular';
 
 @Component({
-  selector: 'app-researchers-management',
-  templateUrl: './researchers-management.component.html',
- // styleUrls: ['./researchers-management.component.scss']
+  selector: 'app-researcher-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
+    AvatarModule,
+    BadgeModule,
+    BreadcrumbModule,
+    ButtonModule,
+    CardModule,
+    DropdownModule,
+    FooterModule,
+    FormModule,
+    GridModule,
+    HeaderModule,
+    IconModule,
+    ListGroupModule,
+    NavModule,
+    SidebarModule,
+    WidgetModule,
+    UtilitiesModule
+  ],
+  providers: [IconSetService],
+  templateUrl:'./researchers-management.component.html',
+  styleUrls: ['./researcher-dashboard.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ResearchersManagementComponent implements OnInit {
-  researchers: Researcher[] = [];
-  filteredResearchers: Researcher[] = [];
-  searchTerm: string = '';
-  statusFilter: string = 'all';
+export class ResearcherDashboardComponent implements OnInit {
+  stats = {
+    myPublications: 24,
+    totalViews: 1568,
+    citations: 89,
+    collaborators: 12
+  };
 
-  constructor() { }
+  recentPublications = [
+    { 
+      title: 'Advancements in Quantum Machine Learning', 
+      date: 'Published: May 15, 2023', 
+      views: 245, 
+      citations: 12 
+    },
+    { 
+      title: 'Neural Networks for Medical Diagnosis', 
+      date: 'Published: March 8, 2023', 
+      views: 189, 
+      citations: 8 
+    },
+    { 
+      title: 'Blockchain in Healthcare Systems', 
+      date: 'Published: January 22, 2023', 
+      views: 132, 
+      citations: 5 
+    }
+  ];
 
-  ngOnInit(): void {
-    // Mock data
-    this.researchers = [
-      { id: 1, name: 'Dr. Anweesha Banerjee', email: 'anweesha@example.com', institution: 'MIT', domain: 'AI Research', publications: 24, status: 'active' },
-      { id: 2, name: 'Prof. John Smith', email: 'jsmith@example.com', institution: 'Stanford University', domain: 'Quantum Computing', publications: 37, status: 'active' },
-      { id: 3, name: 'Dr. Maria Rodriguez', email: 'mrodriguez@example.com', institution: 'Harvard', domain: 'Medical Research', publications: 18, status: 'pending' },
-      { id: 4, name: 'Prof. David Chen', email: 'dchen@example.com', institution: 'Berkeley', domain: 'Engineering', publications: 42, status: 'active' },
-      { id: 5, name: 'Dr. Sarah Johnson', email: 'sjohnson@example.com', institution: 'Oxford', domain: 'Environmental Science', publications: 29, status: 'inactive' }
-    ];
-    
-    this.filteredResearchers = [...this.researchers];
-  }
+  recommendedResearch = [
+    { 
+      title: 'Deep Learning for Image Recognition', 
+      author: 'Dr. Smith et al.', 
+      domain: 'AI', 
+      date: '2023-06-10' 
+    },
+    { 
+      title: 'Sustainable Energy Solutions', 
+      author: 'Prof. Johnson', 
+      domain: 'Energy', 
+      date: '2023-05-28' 
+    },
+    { 
+      title: 'CRISPR Gene Editing Advances', 
+      author: 'Dr. Lee', 
+      domain: 'Biotech', 
+      date: '2023-06-02' 
+    },
+    { 
+      title: 'Quantum Computing Breakthroughs', 
+      author: 'Dr. Chen', 
+      domain: 'Quantum', 
+      date: '2023-05-15' 
+    },
+    { 
+      title: 'Climate Change Models', 
+      author: 'Dr. Wilson', 
+      domain: 'Climate', 
+      date: '2023-06-05' 
+    }
+  ];
 
-  filterResearchers(): void {
-    this.filteredResearchers = this.researchers.filter(researcher => {
-      const matchesSearch = this.searchTerm === '' || 
-        researcher.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        researcher.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        researcher.institution.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        researcher.domain.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
-      const matchesStatus = this.statusFilter === 'all' || researcher.status === this.statusFilter;
-      
-      return matchesSearch && matchesStatus;
-    });
-  }
+  constructor(private router: Router) { }
 
-  onSearch(term: string): void {
-    this.searchTerm = term;
-    this.filterResearchers();
-  }
-
-  onStatusFilterChange(status: string): void {
-    this.statusFilter = status;
-    this.filterResearchers();
-  }
-
-  deleteResearcher(id: number): void {
-    // In a real app, you would call a service to delete the researcher
-    this.researchers = this.researchers.filter(r => r.id !== id);
-    this.filterResearchers();
-  }
+  ngOnInit(): void { }
+ 
+  //openUploadModal(): void {
+   // const uploadModal = new Modal(document.getElementById('uploadModal')!);
+   // uploadModal.show();
+  //}
 }

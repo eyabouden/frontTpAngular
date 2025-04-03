@@ -1,33 +1,482 @@
-<div class="dashboard-container">
-    <div class="dashboard-header">
-      <h1>userr Dashboard</h1>
-      <div class="user-info">
-        <span>Welcome, {{ userName }}</span>
-        <button (click)="logout()" class="btn btn-outline">Logout</button>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResearchHub - User Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-gray: #ecf0f1;
+            --dark-gray: #7f8c8d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px 0;
+        }
+        
+        .user-profile {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid var(--primary-color);
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--light-gray);
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            padding: 30px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-bar {
+            display: flex;
+            width: 60%;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+        
+        .search-bar button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        
+        .domain-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .domain-btn {
+            padding: 8px 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .domain-btn:hover, .domain-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .articles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .article-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .article-image {
+            height: 160px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .article-content {
+            padding: 20px;
+        }
+        
+        .article-domain {
+            display: inline-block;
+            background-color: var(--light-gray);
+            color: var(--secondary-color);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .article-title {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        /* Profile Page (hidden by default) */
+        .profile-page {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 30px;
+            border: 5px solid var(--primary-color);
+        }
+        
+        .profile-info h1 {
+            margin: 0 0 10px;
+        }
+        
+        .profile-info p {
+            color: var(--dark-gray);
+            margin: 5px 0;
+        }
+        
+        .profile-details {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .detail-label {
+            flex: 0 0 200px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .articles-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar" class="user-avatar">
+                <h3 class="user-name">John Doe</h3>
+                <p class="user-email">eyabouden</p>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="showContent('articles')">
+                    <i class="fas fa-book-open"></i> Articles & Publications
+                </div>
+                <div class="nav-item" onclick="showContent('profile')">
+                    <i class="fas fa-user"></i> My Profile
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-bookmark"></i> Saved Articles
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-bell"></i> Notifications
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cog"></i> Settings
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Articles & Publications Page (Default View) -->
+            <div id="articles-page">
+                <div class="header">
+                    <h1>Articles & Publications</h1>
+                    <button class="btn-primary" onclick="showContent('profile')">
+                        <i class="fas fa-user"></i> View Profile
+                    </button>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" placeholder="Search articles...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                
+                <div class="domain-filters">
+                    <div class="domain-btn active">All Domains</div>
+                    <div class="domain-btn">Computer Science</div>
+                    <div class="domain-btn">Medicine</div>
+                    <div class="domain-btn">Engineering</div>
+                    <div class="domain-btn">Physics</div>
+                    <div class="domain-btn">Biology</div>
+                    <div class="domain-btn">Chemistry</div>
+                </div>
+                
+                <div class="articles-container">
+                    <!-- Article Card 1 -->
+                    <div class="article-card">
+                        <div class="article-image" style="background-image: url('https://source.unsplash.com/random/300x200/?research,computer')"></div>
+                        <div class="article-content">
+                            <span class="article-domain">Computer Science</span>
+                            <h3 class="article-title">Advances in Quantum Computing Algorithms</h3>
+                            <p class="article-excerpt">Exploring new approaches to quantum algorithm design that could revolutionize computation.</p>
+                            <div class="article-meta">
+                                <span><i class="far fa-calendar"></i> 15 Mar 2023</span>
+                                <span><i class="far fa-eye"></i> 1.2K views</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Article Card 2 -->
+                    <div class="article-card">
+                        <div class="article-image" style="background-image: url('https://source.unsplash.com/random/300x200/?research,medicine')"></div>
+                        <div class="article-content">
+                            <span class="article-domain">Medicine</span>
+                            <h3 class="article-title">Personalized Cancer Treatment Using AI</h3>
+                            <p class="article-excerpt">How machine learning is enabling tailored treatment plans for cancer patients.</p>
+                            <div class="article-meta">
+                                <span><i class="far fa-calendar"></i> 28 Feb 2023</span>
+                                <span><i class="far fa-eye"></i> 2.4K views</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Article Card 3 -->
+                    <div class="article-card">
+                        <div class="article-image" style="background-image: url('https://source.unsplash.com/random/300x200/?research,engineering')"></div>
+                        <div class="article-content">
+                            <span class="article-domain">Engineering</span>
+                            <h3 class="article-title">Sustainable Materials for Urban Construction</h3>
+                            <p class="article-excerpt">Innovative materials that reduce carbon footprint in large-scale construction projects.</p>
+                            <div class="article-meta">
+                                <span><i class="far fa-calendar"></i> 10 Jan 2023</span>
+                                <span><i class="far fa-eye"></i> 856 views</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Article Card 4 -->
+                    <div class="article-card">
+                        <div class="article-image" style="background-image: url('https://source.unsplash.com/random/300x200/?research,physics')"></div>
+                        <div class="article-content">
+                            <span class="article-domain">Physics</span>
+                            <h3 class="article-title">Breakthroughs in Nuclear Fusion Technology</h3>
+                            <p class="article-excerpt">Recent developments bringing us closer to practical fusion energy solutions.</p>
+                            <div class="article-meta">
+                                <span><i class="far fa-calendar"></i> 05 Jan 2023</span>
+                                <span><i class="far fa-eye"></i> 3.1K views</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Page (Hidden by default) -->
+            <div id="profile-page" class="profile-page">
+                <div class="profile-header">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile Avatar" class="profile-avatar">
+                    <div class="profile-info">
+                        <h1>John Doe</h1>
+                        <p><i class="fas fa-envelope"></i> john.doe.com</p>
+                        <p><i class="fas fa-university"></i> Senior Researcher at Tech University</p>
+                        <p><i class="fas fa-map-marker-alt"></i> San Francisco, CA</p>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <h2>Personal Information</h2>
+                    <div class="detail-row">
+                        <div class="detail-label">Full Name</div>
+                        <div class="detail-value">John Michael Doe</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Date of Birth</div>
+                        <div class="detail-value">15 April 1985</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Contact Number</div>
+                        <div class="detail-value">+1 (555) 123-4567</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Address</div>
+                        <div class="detail-value">123 Research Ave, San Francisco, CA 94107</div>
+                    </div>
+                    
+                    <h2>Professional Information</h2>
+                    <div class="detail-row">
+                        <div class="detail-label">Position</div>
+                        <div class="detail-value">Senior Research Scientist</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Institution</div>
+                        <div class="detail-value">Tech University</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Department</div>
+                        <div class="detail-value">Computer Science</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Research Domains</div>
+                        <div class="detail-value">Artificial Intelligence, Machine Learning, Quantum Computing</div>
+                    </div>
+                    
+                    <h2>Account Settings</h2>
+                    <div class="detail-row">
+                        <div class="detail-label">Email Notifications</div>
+                        <div class="detail-value">Enabled</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Two-Factor Auth</div>
+                        <div class="detail-value">Enabled</div>
+                    </div>
+                    
+                    <button class="btn-primary" style="margin-top: 30px; padding: 12px 25px;">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <div class="dashboard-content">
-      <div class="role-card">
-        <h2>Current Role: useerr</h2>
-        <p>You have access to all system features and can manage users, content, and settings.</p>
-      </div>
-      
-      <div class="dashboard-widgets">
-        <div class="widget">
-          <h3>User Management</h3>
-          <p>Create, view, update, and delete users. Assign roles and permissions.</p>
-        </div>
+    <script>
+        function showContent(page) {
+            if (page === 'articles') {
+                document.getElementById('articles-page').style.display = 'block';
+                document.getElementById('profile-page').style.display = 'none';
+                
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } 
+            else if (page === 'profile') {
+                document.getElementById('articles-page').style.display = 'none';
+                document.getElementById('profile-page').style.display = 'block';
+                
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            }
+        }
         
-        <div class="widget">
-          <h3>System Settings</h3>
-          <p>Configure application settings and parameters.</p>
-        </div>
-        
-        <div class="widget">
-          <h3>Activity Logs</h3>
-          <p>View detailed system and user activity logs.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+        // Add click event to domain filters
+        document.querySelectorAll('.domain-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.domain-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Here you would filter articles by domain
+                // For demo purposes, we're just logging the domain
+                console.log('Filtering by domain:', this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>
